@@ -1,8 +1,14 @@
 
-local str = ' text '
+local str = ' text -- text '
 local multiline_str = [[text
-      text    text    ]] -- this is multiline string
+    -- owo  text    text    ]] -- this is multiline string
   
+ cooler_string = [===[
+   text
+       text -- owo
+             --[[ owo]]
+  ]===]
+ 
   local obj = {
     
     1,
