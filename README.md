@@ -1,4 +1,4 @@
 # Lua minifier
 Written on Lua  
-Usage: `minify(input_file_path, output_file_path)`  
+Usage: `minify(str)` - function returns string, containing minified code.  
 Removes unnecessary spaces, tabulations, newline characters and replaces required ones with spaces. Removes comments.
