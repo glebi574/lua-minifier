@@ -19,16 +19,16 @@ local chars = {
   special = 3,
 }
 
-local keywords = {'if', 'then', 'else', 'elseif', 'do', 'end', 'for', 'in', 'while', 'repeat', 'until', 'break', 'function', 'return', 'local', 'nil', 'true', 'false', 'and', 'or', 'not'}
-
 local special_char = {'(', ')', '{', '}', '[', ']', '<', '>', '#', '+', '-', '*', '/', '=', ',', '.', ':', ';', '~', '^', '%', '\'', '\"'}
 
 local removable_char = {' ', '\t', '\n'}
 
-function test_minify_from_file(path)
-  local file = io.open(path, 'r')
-  print(minify(file:read('*a')))
-  file:close()
+function minify_file(input_path, output_path)
+  local input_file = io.open(input_path, 'r')
+  local output_file = io.open(output_path, 'w+')
+  output_file:write(minify(input_file:read('*a')))
+  input_file:close()
+  output_file:close()
 end
 
 local function contains(arr, v)
@@ -175,155 +175,3 @@ function minify(str)
   end
   return table.concat(tmp_str)
 end
-
---[[
-for i = 1, #str do
-    local char = str:sub(i, i)
-    if     state == states.code then
-      if char == '-' then
-        state = states.comment_start
-      end
-      table.insert(tmp_str, char)
-    elseif state == states.comment_start then
-      if char == '-' then
-        state = states.comment_just_started
-        table.remove(tmp_str, #tmp_str)
-      else
-        state = states.code
-        table.insert(tmp_str, char)
-      end
-    elseif state == states.comment_just_started then
-      if char == '[' then
-        state = states.multiline_comment_start
-      elseif char == '\n' then
-        state = states.code
-      else
-        state = states.comment
-      end
-    elseif state == states.comment then
-      if char == '\n' then
-        state = states.code
-      end
-    elseif state == states.multiline_comment_start then
-      if char == '[' then
-        state = states.multiline_comment
-      else
-        state = states.comment
-      end
-    elseif state == states.multiline_comment then
-      if char == ']' then
-        state = states.multiline_comment_end
-      end
-    elseif state == states.multiline_comment_end then
-      if char == ']' then
-        state = states.code
-        table.insert(tmp_str, ' ')
-      else
-        state = states.multiline_comment
-      end
-    end
-  end
-  
-  if true then
-    return table.concat(tmp_str)
-  end
-  
-  str = tmp_str
-  tmp_str = {}
-  state = states.code_after_special
-  
-  for i = 1, #str do -- removing unnecessary spaces, tabulations, new line characters
-    local char = str[i]
-    if state == states.code_after_char then -- insert anything, if needed, it will be removed later
-      if contains(special_char, char) then
-        if char == '\'' then
-          state = states.string1
-        elseif char == '\"' then
-          state = states.string1
-        elseif char == '[' then
-          state = states.multiline_string_start
-        else
-          state = states.code_after_special
-        end
-      elseif contains(removable_char, char) then
-        state = states.code_removable_after_char
-      end
-      table.insert(tmp_str, char)
-    elseif state == states.code_after_special then -- ignore removable symbols
-      if contains(special_char, char) then
-        if char == '\'' then
-          state = states.string1
-        elseif char == '\"' then
-          state = states.string1
-        elseif char == '[' then
-          state = states.multiline_string_start
-        end
-        table.insert(tmp_str, char)
-      elseif not contains(removable_char, char) then
-        state = states.code_after_char
-        table.insert(tmp_str, char)
-      end
-    elseif state == states.code_removable_after_char then -- remove spaces between char and special
-      if contains(special_char, char) then
-        if char == '\'' then
-          state = states.string1
-        elseif char == '\"' then
-          state = states.string1
-        elseif char == '[' then
-          state = states.multiline_string_start
-        else
-          state = states.special_char
-        end
-        table.remove(tmp_str, #tmp_str)
-        table.insert(tmp_str, char)
-      elseif not contains(removable_char, char) then
-        state = states.code_after_char
-        table.insert(tmp_str, char)
-      end
-    elseif state == states.code_removable_after_special then -- remove spaces
-      if contains(special_char, char) then
-        if char == '\'' then
-          state = states.string1
-        elseif char == '\"' then
-          state = states.string1
-        elseif char == '[' then
-          state = states.multiline_string_start
-        else
-          state = states.special_char
-        end
-        table.remove(tmp_str, #tmp_str)
-        table.insert(tmp_str, char)
-      elseif not contains(removable_char, char) then
-        state = states.code_after_char
-        table.remove(tmp_str, #tmp_str)
-        table.insert(tmp_str, char)
-      end
-    elseif state == states.string1 then
-      if char == '\'' then
-        state = states.code_after_special
-      elseif char == '\\' then
-        state = states.string1_not_end
-      end
-      table.insert(tmp_str, char)
-    elseif state == states.string1_not_end then
-      state = states.string1
-      table.insert(tmp_str, char)
-    elseif state == states.string2 then
-      if char == '\"' then
-        state = states.code_after_special
-      elseif char == '\\' then
-        state = states.string1_not_end
-      end
-      table.insert(tmp_str, char)
-    elseif state == states.string2_not_end then
-      state = states.string2
-      table.insert(tmp_str, char)
-    elseif state == states.multiline_string_start then
-      
-    elseif state == states.multiline_string then
-      
-    elseif state == states.multiline_string_end then
-      
-    end
-  end
-]]
