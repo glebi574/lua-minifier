@@ -48,7 +48,7 @@ void minify_files(std::filesystem::path* folder_path) {
 }
 
 int main(int argc, char* argv[]) {
-  initial_folder_path = std::filesystem::canonical(std::filesystem::path(argv[0])).parent_path();
+  initial_folder_path = std::filesystem::path(argv[0]).parent_path();
   std::filesystem::path folder_path;
   if (argc > 1) {
     folder_path = argv[1];
