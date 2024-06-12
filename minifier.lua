@@ -66,7 +66,7 @@ function minify(str)
           abomination_len = 0
         elseif char == '-' then
           state = states.comment_start
-        elseif char == '.' and previous_char == chars.number then -- 1 .. something will be malformed
+        elseif char == '.' and previous_char == chars.number and str:sub(i + 1, i + 1) == '.' then -- 1 .. something will be malformed
           table.insert(tmp_str, ' ')
         end
         if char ~= '-' then
